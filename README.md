@@ -12,6 +12,18 @@ go install github.com/isfk/lazytodo@latest
 
 装完直接 `lazytodo`（确认 `$(go env GOPATH)/bin` 在 `PATH` 里）。需要 Go 1.26 以上。
 
+还没打 tag 时 `@latest` 解析不到版本，改用分支：
+
+```bash
+go install github.com/isfk/lazytodo@main
+```
+
+模块代理拉不到 GitHub 时（镜像没缓存、内网），绕过代理直连：
+
+```bash
+GOPROXY=direct go install github.com/isfk/lazytodo@latest
+```
+
 从源码跑：
 
 ```bash
