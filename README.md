@@ -4,13 +4,27 @@
 
 目的不是做一个待办应用，而是把 lazygit 的分层方式**裁剪到最小可读规模**：19 个源文件约 3400 行，每一层都还能认出 lazygit 里对应的那个包。
 
-## 跑起来
+## 安装
 
 ```bash
+go install github.com/isfk/lazytodo@latest
+```
+
+装完直接 `lazytodo`（确认 `$(go env GOPATH)/bin` 在 `PATH` 里）。需要 Go 1.26 以上。
+
+从源码跑：
+
+```bash
+git clone https://github.com/isfk/lazytodo
+cd lazytodo
 go run .
 ```
 
-数据存在 `os.UserConfigDir()/lazytodo/todos.json`（macOS 是 `~/Library/Application Support/lazytodo/todos.json`）。文件不存在就是空列表，第一次改动才会创建。
+## 用法
+
+数据存在**当前目录**的 `.lazytodo.json`。换一个目录启动就是另一份待办，互不干扰。文件不存在就是空列表，第一次改动才会创建。
+
+想在仓库里用，把它加进 `.gitignore`。
 
 ## 界面
 

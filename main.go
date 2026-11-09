@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shen/lazytodo/pkg/commands"
-	"github.com/shen/lazytodo/pkg/config"
-	"github.com/shen/lazytodo/pkg/gui"
-	"github.com/shen/lazytodo/pkg/tui/tcelldriver"
+	"github.com/isfk/lazytodo/pkg/commands"
+	"github.com/isfk/lazytodo/pkg/config"
+	"github.com/isfk/lazytodo/pkg/gui"
+	"github.com/isfk/lazytodo/pkg/tui/tcelldriver"
 )
 
 func main() {

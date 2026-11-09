@@ -4,9 +4,9 @@
 package controllers
 
 import (
-	"github.com/shen/lazytodo/pkg/config"
-	"github.com/shen/lazytodo/pkg/gui/types"
-	"github.com/shen/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/config"
+	"github.com/isfk/lazytodo/pkg/gui/types"
+	"github.com/isfk/lazytodo/pkg/i18n"
 )
 
 // Common is everything a controller is allowed to reach. Passing one struct

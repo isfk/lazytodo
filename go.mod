@@ -1,6 +1,6 @@
-module github.com/shen/lazytodo
+module github.com/isfk/lazytodo
 
-go 1.27
+go 1.26.0
 
 require (
 	github.com/clipperhouse/displaywidth v0.11.0

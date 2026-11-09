@@ -11,7 +11,7 @@ import (
 
 	"github.com/gdamore/tcell/v3"
 
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // Screen is a tui.Screen backed by a real terminal.

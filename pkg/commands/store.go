@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/shen/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/models"
 )
 
 // ErrNotFound is returned by the mutating helpers when the id is gone. Callers
@@ -37,14 +37,18 @@ func NewStore(path string) *Store {
 	return &Store{path: path, nextID: 1}
 }
 
-// DefaultPath returns the OS config dir plus lazytodo/todos.json, falling back to
-// ./todos.json when the OS can't tell us where config lives.
+// DefaultPath is the todo file in the current directory.
+//
+// The list is per directory on purpose: run the tool in another project and you
+// see that project's todos, with nothing shared behind your back. Resolved to an
+// absolute path so error messages say exactly which file is being read.
 func DefaultPath() string {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		return "todos.json"
+	const name = ".lazytodo.json"
+
+	if wd, err := os.Getwd(); err == nil {
+		return filepath.Join(wd, name)
 	}
-	return filepath.Join(dir, "lazytodo", "todos.json")
+	return name
 }
 
 func (s *Store) Path() string { return s.path }

@@ -4,11 +4,11 @@
 package types
 
 import (
-	"github.com/shen/lazytodo/pkg/commands"
-	"github.com/shen/lazytodo/pkg/config"
-	"github.com/shen/lazytodo/pkg/i18n"
-	"github.com/shen/lazytodo/pkg/models"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/commands"
+	"github.com/isfk/lazytodo/pkg/config"
+	"github.com/isfk/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // ContextKey identifies one pane. String constants keep bindings and logs

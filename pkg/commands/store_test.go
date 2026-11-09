@@ -8,12 +8,24 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shen/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/models"
 )
 
 func newTestStore(t *testing.T) *Store {
 	t.Helper()
 	return NewStore(filepath.Join(t.TempDir(), "todos.json"))
+}
+
+func TestDefaultPathIsInTheWorkingDirectory(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd: %v", err)
+	}
+
+	want := filepath.Join(wd, ".lazytodo.json")
+	if got := DefaultPath(); got != want {
+		t.Errorf("DefaultPath() = %q, want %q", got, want)
+	}
 }
 
 func TestLoadMissingFileIsEmpty(t *testing.T) {

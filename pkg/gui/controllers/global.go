@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/shen/lazytodo/pkg/gui/types"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/gui/types"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // GlobalController holds the bindings that work in every pane. The GUI consults

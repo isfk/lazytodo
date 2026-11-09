@@ -7,7 +7,7 @@ package presentation
 import (
 	"strings"
 
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // RenderColumns lays out rows of cells into fixed-width lines.

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/shen/lazytodo/pkg/gui/presentation"
-	"github.com/shen/lazytodo/pkg/gui/types"
-	"github.com/shen/lazytodo/pkg/models"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/gui/presentation"
+	"github.com/isfk/lazytodo/pkg/gui/types"
+	"github.com/isfk/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // Field positions in the todo form. Kept as constants because the popup hands

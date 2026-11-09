@@ -4,15 +4,15 @@
 package gui
 
 import (
-	"github.com/shen/lazytodo/pkg/commands"
-	"github.com/shen/lazytodo/pkg/config"
-	"github.com/shen/lazytodo/pkg/gui/context"
-	"github.com/shen/lazytodo/pkg/gui/controllers"
-	"github.com/shen/lazytodo/pkg/gui/presentation"
-	"github.com/shen/lazytodo/pkg/gui/types"
-	"github.com/shen/lazytodo/pkg/i18n"
-	"github.com/shen/lazytodo/pkg/models"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/commands"
+	"github.com/isfk/lazytodo/pkg/config"
+	"github.com/isfk/lazytodo/pkg/gui/context"
+	"github.com/isfk/lazytodo/pkg/gui/controllers"
+	"github.com/isfk/lazytodo/pkg/gui/presentation"
+	"github.com/isfk/lazytodo/pkg/gui/types"
+	"github.com/isfk/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 const (

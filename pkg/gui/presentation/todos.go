@@ -5,10 +5,10 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/shen/lazytodo/pkg/gui/types"
-	"github.com/shen/lazytodo/pkg/i18n"
-	"github.com/shen/lazytodo/pkg/models"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/gui/types"
+	"github.com/isfk/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/models"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // Markers for the status column: hollow circle, half-filled circle, tick.

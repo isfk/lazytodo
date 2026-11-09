@@ -1,0 +1,5 @@
+# build output
+/lazytodo
+
+# per-directory todo list
+.lazytodo.json

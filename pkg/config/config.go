@@ -4,8 +4,8 @@
 package config
 
 import (
-	"github.com/shen/lazytodo/pkg/i18n"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 // UserConfig is the whole configuration tree.

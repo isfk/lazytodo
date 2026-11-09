@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shen/lazytodo/pkg/commands"
-	"github.com/shen/lazytodo/pkg/config"
-	"github.com/shen/lazytodo/pkg/gui"
-	"github.com/shen/lazytodo/pkg/i18n"
-	"github.com/shen/lazytodo/pkg/tui"
+	"github.com/isfk/lazytodo/pkg/commands"
+	"github.com/isfk/lazytodo/pkg/config"
+	"github.com/isfk/lazytodo/pkg/gui"
+	"github.com/isfk/lazytodo/pkg/i18n"
+	"github.com/isfk/lazytodo/pkg/tui"
 )
 
 const (
