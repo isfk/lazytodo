@@ -12,6 +12,8 @@ go install github.com/isfk/lazytodo@latest   # 还没打 tag 时用 @main
 
 需要 Go 1.26+。也可以 `git clone` 后 `go run .`。
 
+想让 agent 直接改待办列表，再装一次扩展：TUI 里按 `I`，或 `lazytodo --install-extension pi`。见[让 agent 改待办](#让-agent-改待办)。
+
 ## 用法
 
 数据存在**当前目录**的 `.lazytodo.json`——换个目录就是另一份待办。文件不存在即空列表，第一次改动才创建。

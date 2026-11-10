@@ -12,6 +12,8 @@ go install github.com/isfk/lazytodo@latest   # use @main if there is no tag yet
 
 Requires Go 1.26+. Or `git clone` and `go run .`.
 
+To let an agent edit the list, install the extension as well: press `I` in the TUI, or run `lazytodo --install-extension pi`. See [Driving it from an agent](#driving-it-from-an-agent).
+
 ## Usage
 
 Todos live in `.lazytodo.json` **in the current directory** — another directory means another list. A missing file is an empty list; the file appears on the first change.
