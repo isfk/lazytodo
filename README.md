@@ -38,12 +38,20 @@ go install github.com/isfk/lazytodo@latest   # 还没打 tag 时用 @main
 | `l` `h` | 进 / 出详情面板（面板内 `y` 复制选中行） |
 | `esc` | 清除过滤 |
 | `ctrl+d` / `q` | 重新读盘 / 退出 |
+| `I` | 把 agent 扩展装进 `~/.pi/agent/extensions/` |
 
 界面语言按 `LC_ALL` → `LC_MESSAGES` → `LANGUAGE` → `LANG` 自动中英切换；中英混排按字符显示宽度对齐与截断（中文占 2 格）。
 
 ## 让 agent 改待办
 
-`~/.pi/agent/extensions/lazytodo.ts` 给 pi 注册了一个 `lazytodo` 工具，agent 能直接列 / 增 / 改 / 删当前目录的待办。TUI 每 400ms 对比一次文件 mtime，变了自动重载——不用按键，屏幕自己更新。
+扩展源码在仓库里（`pkg/agents/pi/lazytodo.ts`），编译时用 `go:embed` 打进二进制，装的时候不下载任何东西。两种装法：
+
+- TUI 里按 **`I`**
+- 或者 `lazytodo --install-extension pi`
+
+写到 `~/.pi/agent/extensions/lazytodo.ts`：目录不存在会建，已有文件内容不同会先备份成 `lazytodo.ts.bak.<时间戳>`。装完在 pi 里 `/reload` 或重开会话即可生效。
+
+装好之后 pi 多了一个 `lazytodo` 工具，agent 能直接列 / 增 / 改 / 删当前目录的待办。TUI 每 400ms 对比一次文件 mtime，变了自动重载——不用按键，屏幕自己更新。
 
 | action | 参数 | 作用 |
 |---|---|---|
@@ -55,6 +63,8 @@ go install github.com/isfk/lazytodo@latest   # 还没打 tag 时用 @main
 扩展直接写 `.lazytodo.json`（和 TUI 一样的原子写：临时文件 + rename），并走 pi 的 `withFileMutationQueue`，不会和内置 `edit` / `write` 抢写。
 
 > 列表按目录隔离，所以 agent 和 TUI 得在同一个工作目录，才看得到同一份。
+
+以后要接 codex / claude，只需在 `pkg/agents` 里加一条 `Agent`（目标目录 + 源文件），TUI 的 `I`、`--install-extension`、测试都是复用的。
 
 ## 分层
 

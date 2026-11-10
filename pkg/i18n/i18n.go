@@ -51,6 +51,12 @@ type TranslationSet struct {
 	NextFilter  string
 	PrevFilter  string
 
+	// Installing the agent integration.
+	InstallAgent       string
+	ExtInstalled       string // "%s"
+	ExtInstalledBackup string // "%s", "%s"
+	ExtUpToDate        string // "%s"
+
 	// Why a binding is disabled.
 	NoTodoSelected string
 	NoFilter       string
@@ -100,6 +106,11 @@ var english = TranslationSet{
 	NextFilter:  "Next filter",
 	PrevFilter:  "Prev filter",
 
+	InstallAgent:       "Install agent extension",
+	ExtInstalled:       "Installed %s",
+	ExtInstalledBackup: "Installed %s (old file kept as %s)",
+	ExtUpToDate:        "Extension already up to date: %s",
+
 	NoTodoSelected: "No todo selected",
 	NoFilter:       "No filter applied",
 	NothingToCopy:  "Nothing to copy",
@@ -146,6 +157,11 @@ var chinese = TranslationSet{
 	ClearFilter: "清除过滤",
 	NextFilter:  "下一个筛选",
 	PrevFilter:  "上一个筛选",
+
+	InstallAgent:       "安装 agent 扩展",
+	ExtInstalled:       "已安装到 %s",
+	ExtInstalledBackup: "已安装到 %s（旧文件备份为 %s）",
+	ExtUpToDate:        "扩展已是最新：%s",
 
 	NoTodoSelected: "没有选中待办",
 	NoFilter:       "没有生效的过滤",

@@ -1,6 +1,8 @@
 package integration_test
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -202,6 +204,31 @@ func TestOutsideWriteAppearsAfterReload(t *testing.T) {
 			// Its description comes through too.
 			d.Press(d.Keys.Todos.Bottom)
 			d.Detail().Lines(Equals("written outside the TUI"))
+		},
+	})
+}
+
+// TestInstallAgentKeyWritesTheExtension covers the keystroke that copies the
+// embedded integration into the agent's extension folder.
+func TestInstallAgentKeyWritesTheExtension(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+
+	RunTest(t, TestCase{
+		Setup: func(shell *Shell) { shell.Add("one") },
+		Run: func(d *TestDriver) {
+			d.Press(d.Keys.Universal.InstallAgent)
+
+			path := filepath.Join(home, ".pi", "agent", "extensions", "lazytodo.ts")
+			if _, err := os.Stat(path); err != nil {
+				t.Fatalf("expected the extension at %s: %v", path, err)
+			}
+			// The status bar clips the long temp path, so match the verb.
+			d.Status().Lines(Contains("Installed"))
+
+			// A second press reports that nothing changed.
+			d.Press(d.Keys.Universal.InstallAgent)
+			d.Status().Lines(Contains("up to date"))
 		},
 	})
 }

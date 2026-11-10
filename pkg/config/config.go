@@ -28,6 +28,8 @@ type Keybindings struct {
 type UniversalKeybindings struct {
 	Quit    tui.Key
 	Refresh tui.Key
+	// InstallAgent writes the agent integration into the agent's extension folder.
+	InstallAgent tui.Key
 }
 
 type TodosKeybindings struct {
@@ -68,8 +70,9 @@ func Default() *UserConfig {
 		Language: i18n.Detect(),
 		Keybinding: Keybindings{
 			Universal: UniversalKeybindings{
-				Quit:    "q",
-				Refresh: tui.KeyCtrlD,
+				Quit:         "q",
+				Refresh:      tui.KeyCtrlD,
+				InstallAgent: "I",
 			},
 			Todos: TodosKeybindings{
 				Next:             "j",

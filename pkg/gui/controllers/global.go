@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+
+	"github.com/isfk/lazytodo/pkg/agents"
 	"github.com/isfk/lazytodo/pkg/gui/types"
 	"github.com/isfk/lazytodo/pkg/tui"
 )
@@ -36,5 +39,31 @@ func (self *GlobalController) GetKeybindings() []*types.Binding {
 			Description: self.c.Tr.Reload,
 			Tooltip:     "Re-read the todo file from disk",
 		},
+		{
+			Keys:        []tui.Key{keys.InstallAgent},
+			Handler:     self.installAgent,
+			Description: self.c.Tr.InstallAgent,
+			Tooltip:     "Write the agent integration into ~/.pi/agent/extensions",
+		},
 	}
+}
+
+// installAgent drops the embedded agent integration into the agent's extension
+// folder, so a fresh machine needs only `lazytodo` plus one keystroke. The file is
+// ours and versioned here, so overwriting it is the whole point of the key.
+func (self *GlobalController) installAgent() error {
+	result, err := agents.Install(agents.Pi)
+	if err != nil {
+		return err
+	}
+
+	switch {
+	case !result.Changed:
+		self.c.Gui.ReportInfo(fmt.Sprintf(self.c.Tr.ExtUpToDate, result.Path))
+	case result.Backup != "":
+		self.c.Gui.ReportInfo(fmt.Sprintf(self.c.Tr.ExtInstalledBackup, result.Path, result.Backup))
+	default:
+		self.c.Gui.ReportInfo(fmt.Sprintf(self.c.Tr.ExtInstalled, result.Path))
+	}
+	return nil
 }

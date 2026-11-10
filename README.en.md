@@ -38,12 +38,20 @@ Todos live in `.lazytodo.json` **in the current directory** — another director
 | `l` `h` | Enter / leave the detail pane (`y` there copies the selected line) |
 | `esc` | Clear filters |
 | `ctrl+d` / `q` | Reload / quit |
+| `I` | Install the agent extension into `~/.pi/agent/extensions/` |
 
 The interface language follows `LC_ALL` → `LC_MESSAGES` → `LANGUAGE` → `LANG` (Chinese or English). Mixed CJK/Latin text is aligned and truncated by display width, so a Chinese character takes two cells.
 
 ## Driving it from an agent
 
-`~/.pi/agent/extensions/lazytodo.ts` registers a `lazytodo` tool with pi, so an agent can list, add, update and remove the todos of the current directory. The TUI compares the file's mtime every 400ms and reloads on change — no keypress needed, the screen updates itself.
+The extension's source lives in the repo (`pkg/agents/pi/lazytodo.ts`) and is embedded into the binary with `go:embed`, so installing it downloads nothing. Two ways:
+
+- press **`I`** in the TUI
+- or `lazytodo --install-extension pi`
+
+It writes `~/.pi/agent/extensions/lazytodo.ts`, creating the folder if needed; an existing file that differs is first kept as `lazytodo.ts.bak.<timestamp>`. Run `/reload` in pi (or restart the session) to pick it up.
+
+Once installed, pi has a `lazytodo` tool, so an agent can list, add, update and remove the todos of the current directory. The TUI compares the file's mtime every 400ms and reloads on change — no keypress needed, the screen updates itself.
 
 | action | arguments | What it does |
 |---|---|---|
@@ -55,6 +63,8 @@ The interface language follows `LC_ALL` → `LC_MESSAGES` → `LANGUAGE` → `LA
 The extension writes `.lazytodo.json` itself, with the same atomic write the TUI uses (temp file + rename), and goes through pi's `withFileMutationQueue` so it can't race the built-in `edit` / `write` tools.
 
 > Lists are per directory, so the agent and the TUI have to share a working directory to see the same file.
+
+Adding codex or claude later means adding one `Agent` value in `pkg/agents` (target folder + source file); the `I` key, `--install-extension` and the tests all come along for free.
 
 ## Layout
 
