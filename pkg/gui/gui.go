@@ -4,6 +4,8 @@
 package gui
 
 import (
+	"time"
+
 	"github.com/isfk/lazytodo/pkg/commands"
 	"github.com/isfk/lazytodo/pkg/config"
 	"github.com/isfk/lazytodo/pkg/gui/context"
@@ -26,6 +28,9 @@ const (
 	popupMarginY  = 4
 	// Frame rows: one above the content, one below.
 	popupFrameRows = 2
+
+	// reloadInterval is how often the store file is checked for outside edits.
+	reloadInterval = 400 * time.Millisecond
 )
 
 // Gui is the whole application state that isn't on disk.
@@ -158,6 +163,9 @@ func (g *Gui) Run() error {
 	}
 	defer g.screen.Close()
 
+	stopWatch := g.watchStore()
+	defer stopWatch()
+
 	g.Refresh()
 	if err := g.Render(); err != nil {
 		return err
@@ -184,6 +192,9 @@ func (g *Gui) Run() error {
 			if err := g.HandleClick(event.X, event.Y); err != nil {
 				g.ReportError(err)
 			}
+
+		case tui.EventReload:
+			g.ReloadFromDisk()
 		}
 
 		if err := g.Render(); err != nil {
@@ -192,6 +203,71 @@ func (g *Gui) Run() error {
 	}
 
 	return nil
+}
+
+// watchStore polls the store file and pokes the event loop when it changes, so a
+// todo written by another process (the pi extension, or an editor) shows up
+// without the user touching anything. Polling the signature instead of using a
+// filesystem watcher keeps this dependency-free and identical on every platform.
+func (g *Gui) watchStore() (stop func()) {
+	done := make(chan struct{})
+	last := g.store.Signature()
+
+	go func() {
+		ticker := time.NewTicker(reloadInterval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				if signature := g.store.Signature(); signature != last {
+					last = signature
+					_ = g.screen.PostEvent(tui.Event{Type: tui.EventReload})
+				}
+			}
+		}
+	}()
+
+	return func() { close(done) }
+}
+
+// ReloadFromDisk re-reads the todo file, keeping the cursor on the same todo when
+// it still exists. It runs on the UI thread, driven by the watcher.
+func (g *Gui) ReloadFromDisk() {
+	previousID := 0
+	if todo := g.currentTodo(); todo != nil {
+		previousID = todo.ID
+	}
+
+	if err := g.store.Load(); err != nil {
+		g.ReportError(err)
+		return
+	}
+
+	g.Refresh()
+
+	if index := indexOfTodoID(g.state.Todos, previousID); index >= 0 {
+		g.state.SelectedIdx = index
+		g.Refresh()
+	}
+}
+
+func (g *Gui) currentTodo() *models.Todo {
+	if g.state.SelectedIdx < 0 || g.state.SelectedIdx >= len(g.state.Todos) {
+		return nil
+	}
+	return g.state.Todos[g.state.SelectedIdx]
+}
+
+func indexOfTodoID(todos []*models.Todo, id int) int {
+	for i, todo := range todos {
+		if todo.ID == id {
+			return i
+		}
+	}
+	return -1
 }
 
 // Layout places the panes for the current screen size. It runs at the start of

@@ -195,6 +195,29 @@ func TestKeyOfRunePassesThroughOtherRunes(t *testing.T) {
 	}
 }
 
+func TestCloseIsIdempotent(t *testing.T) {
+	screen := NewFakeScreen(4, 2)
+
+	screen.Close()
+	screen.Close() // a second Close must not panic on the closed channel
+}
+
+func TestPostEventDeliversAReload(t *testing.T) {
+	screen := NewFakeScreen(10, 3)
+
+	if err := screen.PostEvent(Event{Type: EventReload}); err != nil {
+		t.Fatalf("PostEvent: %v", err)
+	}
+
+	event, err := screen.PollEvent()
+	if err != nil {
+		t.Fatalf("PollEvent: %v", err)
+	}
+	if event.Type != EventReload {
+		t.Errorf("event = %v, want EventReload", event.Type)
+	}
+}
+
 func TestKeyLabel(t *testing.T) {
 	if got := Key(KeySpace).Label(); got != "␣" {
 		t.Errorf("space label = %q", got)

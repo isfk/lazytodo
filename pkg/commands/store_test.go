@@ -28,6 +28,32 @@ func TestDefaultPathIsInTheWorkingDirectory(t *testing.T) {
 	}
 }
 
+// TestSignatureTracksTheFile is what lets the TUI notice an outside write.
+func TestSignatureTracksTheFile(t *testing.T) {
+	s := newTestStore(t)
+
+	if got := s.Signature(); got != "" {
+		t.Errorf("Signature() on a missing file = %q, want empty", got)
+	}
+
+	s.Add("x", "")
+	if err := s.Save(); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+	first := s.Signature()
+	if first == "" {
+		t.Fatal("Signature() is empty after save")
+	}
+
+	s.Add("y", "")
+	if err := s.Save(); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+	if got := s.Signature(); got == first {
+		t.Error("Signature() did not change after the file was rewritten")
+	}
+}
+
 func TestLoadMissingFileIsEmpty(t *testing.T) {
 	s := newTestStore(t)
 

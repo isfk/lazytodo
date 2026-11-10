@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/isfk/lazytodo/pkg/commands"
 	"github.com/isfk/lazytodo/pkg/i18n"
 	. "github.com/isfk/lazytodo/pkg/integration"
 	"github.com/isfk/lazytodo/pkg/models"
@@ -164,6 +165,43 @@ func TestChineseInterface(t *testing.T) {
 			}
 			d.Popup().Includes("标题", "详情")
 			d.Press(tui.KeyEsc)
+		},
+	})
+}
+
+// TestOutsideWriteAppearsAfterReload is the sync path an agent uses: it writes
+// .lazytodo.json itself, and the TUI picks the file up on the next reload.
+func TestOutsideWriteAppearsAfterReload(t *testing.T) {
+	RunTest(t, TestCase{
+		Setup: func(shell *Shell) {
+			shell.Add("one", "two")
+			shell.Cycle(1) // one -> doing
+		},
+		Run: func(d *TestDriver) {
+			d.Press(d.Keys.Todos.Next) // park the cursor on "two"
+
+			// Another process does a read-modify-write, exactly like the extension.
+			other := commands.NewStore(d.Store().Path())
+			if err := other.Load(); err != nil {
+				t.Fatalf("loading from the other store: %v", err)
+			}
+			other.Add("from the agent", "written outside the TUI")
+			if err := other.Save(); err != nil {
+				t.Fatalf("saving from the other store: %v", err)
+			}
+
+			d.Reload()
+
+			// The new todo is there and the cursor stayed on "two".
+			d.Todos().Lines(
+				Contains("one"),
+				Contains("two").IsSelected(),
+				Contains("from the agent"),
+			)
+
+			// Its description comes through too.
+			d.Press(d.Keys.Todos.Bottom)
+			d.Detail().Lines(Equals("written outside the TUI"))
 		},
 	})
 }

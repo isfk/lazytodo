@@ -148,6 +148,15 @@ func (d *TestDriver) Press(keys ...tui.Key) *TestDriver {
 	return d
 }
 
+// Reload re-reads the store the way the file watcher does, then redraws.
+func (d *TestDriver) Reload() *TestDriver {
+	d.t.Helper()
+
+	d.gui.ReloadFromDisk()
+	d.redraw()
+	return d
+}
+
 // Click sends a left click through the real dispatch path and then redraws.
 func (d *TestDriver) Click(x, y int) *TestDriver {
 	d.t.Helper()

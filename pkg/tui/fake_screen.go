@@ -53,8 +53,13 @@ func (s *FakeScreen) Init() error { return nil }
 
 func (s *FakeScreen) Close() {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+	if s.closed {
+		s.mu.Unlock()
+		return
+	}
 	s.closed = true
+	s.mu.Unlock()
+
 	close(s.events)
 }
 
@@ -88,6 +93,23 @@ func (s *FakeScreen) PollEvent() (Event, error) {
 		return Event{}, fmt.Errorf("screen closed")
 	}
 	return ev, nil
+}
+
+// PostEvent queues an event from another goroutine. It never blocks, so a
+// watcher can't stall the test.
+func (s *FakeScreen) PostEvent(event Event) error {
+	s.mu.Lock()
+	closed := s.closed
+	s.mu.Unlock()
+	if closed {
+		return fmt.Errorf("screen closed")
+	}
+
+	select {
+	case s.events <- event:
+	default:
+	}
+	return nil
 }
 
 // Press queues a key event, the test-side equivalent of the user typing.

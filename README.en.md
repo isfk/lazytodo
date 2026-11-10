@@ -41,6 +41,21 @@ Todos live in `.lazytodo.json` **in the current directory** — another director
 
 The interface language follows `LC_ALL` → `LC_MESSAGES` → `LANGUAGE` → `LANG` (Chinese or English). Mixed CJK/Latin text is aligned and truncated by display width, so a Chinese character takes two cells.
 
+## Driving it from an agent
+
+`~/.pi/agent/extensions/lazytodo.ts` registers a `lazytodo` tool with pi, so an agent can list, add, update and remove the todos of the current directory. The TUI compares the file's mtime every 400ms and reloads on change — no keypress needed, the screen updates itself.
+
+| action | arguments | What it does |
+|---|---|---|
+| `list` | `filter?` | List, optionally by status |
+| `add` | `title`, `detail?` | Add, returns the id |
+| `set` | `id`, `status` | Change status (todo / doing / done) |
+| `remove` | `id` | Delete |
+
+The extension writes `.lazytodo.json` itself, with the same atomic write the TUI uses (temp file + rename), and goes through pi's `withFileMutationQueue` so it can't race the built-in `edit` / `write` tools.
+
+> Lists are per directory, so the agent and the TUI have to share a working directory to see the same file.
+
 ## Layout
 
 | Package | Role |
@@ -58,7 +73,7 @@ Data flows one way: a key or a click mutates the store, `Refresh()` rebuilds eve
 ## Tests
 
 ```bash
-go test ./...   # 97 tests: commands / presentation / tui / driver / headless integration
+go test ./...   # 101 tests: commands / presentation / tui / driver / headless integration
 ```
 
 The only dependency is `github.com/gdamore/tcell/v3`, plus the width table it already uses (`displaywidth`).

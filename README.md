@@ -41,6 +41,21 @@ go install github.com/isfk/lazytodo@latest   # 还没打 tag 时用 @main
 
 界面语言按 `LC_ALL` → `LC_MESSAGES` → `LANGUAGE` → `LANG` 自动中英切换；中英混排按字符显示宽度对齐与截断（中文占 2 格）。
 
+## 让 agent 改待办
+
+`~/.pi/agent/extensions/lazytodo.ts` 给 pi 注册了一个 `lazytodo` 工具，agent 能直接列 / 增 / 改 / 删当前目录的待办。TUI 每 400ms 对比一次文件 mtime，变了自动重载——不用按键，屏幕自己更新。
+
+| action | 参数 | 作用 |
+|---|---|---|
+| `list` | `filter?` | 列出，可按状态筛 |
+| `add` | `title`、`detail?` | 新增，返回 id |
+| `set` | `id`、`status` | 改状态（todo / doing / done） |
+| `remove` | `id` | 删除 |
+
+扩展直接写 `.lazytodo.json`（和 TUI 一样的原子写：临时文件 + rename），并走 pi 的 `withFileMutationQueue`，不会和内置 `edit` / `write` 抢写。
+
+> 列表按目录隔离，所以 agent 和 TUI 得在同一个工作目录，才看得到同一份。
+
 ## 分层
 
 | 包 | 干什么 |

@@ -7,6 +7,9 @@ const (
 	EventKey EventType = iota
 	EventResize
 	EventClick
+	// EventReload means "the file on disk changed, re-read it". It is posted by
+	// the GUI's own watcher, not by the terminal.
+	EventReload
 )
 
 // Event is what a Screen hands to the main loop. Only the fields relevant to
@@ -32,8 +35,11 @@ type Screen interface {
 	SetCell(x, y int, ch rune, style Style)
 	// Show flushes the painted grid to the terminal.
 	Show() error
-	// PollEvent blocks until the user does something.
+	// PollEvent blocks until something happens.
 	PollEvent() (Event, error)
+	// PostEvent hands an event to the loop from another goroutine. Only
+	// EventReload is supported: terminal input can't be synthesised.
+	PostEvent(event Event) error
 	// SetClipboard posts text to the system clipboard. Drivers that can't must
 	// return an error rather than silently dropping the text.
 	SetClipboard(text string) error

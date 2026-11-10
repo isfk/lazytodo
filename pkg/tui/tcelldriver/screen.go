@@ -132,6 +132,26 @@ func clipboardCommand() (cmd string, args []string, ok bool) {
 	}
 }
 
+// reloadEvent is our own tcell event, used to wake the loop when the file on
+// disk changed. tcell v3 has no PostEvent, but the event channel is public.
+type reloadEvent struct{ tcell.EventTime }
+
+// PostEvent injects an event into tcell's queue. Only EventReload is supported.
+func (s *Screen) PostEvent(event tui.Event) error {
+	if s.screen == nil {
+		return fmt.Errorf("screen is not initialised")
+	}
+	if event.Type != tui.EventReload {
+		return fmt.Errorf("cannot synthesise event type %d", event.Type)
+	}
+
+	select {
+	case s.screen.EventQ() <- &reloadEvent{}:
+	default:
+	}
+	return nil
+}
+
 // PollEvent reads tcell's event channel and translates the events we model.
 // Mouse, paste and focus events are skipped rather than surfacing as zero values.
 //
@@ -156,6 +176,9 @@ func (s *Screen) PollEvent() (tui.Event, error) {
 // drop: key releases, mouse motion and release, focus changes, pastes.
 func toEvent(event tcell.Event) (tui.Event, bool) {
 	switch event := event.(type) {
+	case *reloadEvent:
+		return tui.Event{Type: tui.EventReload}, true
+
 	case *tcell.EventResize:
 		return tui.Event{Type: tui.EventResize}, true
 

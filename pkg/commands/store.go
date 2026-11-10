@@ -53,6 +53,17 @@ func DefaultPath() string {
 
 func (s *Store) Path() string { return s.path }
 
+// Signature changes whenever the file on disk changes (or appears/disappears),
+// without reading it. A watcher compares two signatures to decide whether to
+// reload -- this is how a todo written by another process reaches the screen.
+func (s *Store) Signature() string {
+	info, err := os.Stat(s.path)
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%d/%d", info.ModTime().UnixNano(), info.Size())
+}
+
 // Load reads the file into memory. A missing file is not an error: it just means
 // an empty list.
 func (s *Store) Load() error {
