@@ -49,7 +49,16 @@ async function loadStore(path: string): Promise<Store> {
     throw error
   }
 
-  const parsed = JSON.parse(raw) as { nextId?: number; todos?: unknown[] }
+  let parsed: { nextId?: number; todos?: unknown[] }
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    // A truncated or hand-edited file must not crash the tool: say what is wrong
+    // and let the model decide (usually: ask the user before rewriting).
+    throw new Error(
+      `${path} is not valid JSON (${(error as Error).message}); refusing to touch it`
+    )
+  }
   const todos: Todo[] = (parsed.todos ?? []).map((entry) => {
     const todo = entry as Partial<Todo> & { done?: boolean }
     const status = STATUSES.includes(todo.status as Status)
@@ -92,7 +101,8 @@ export default async function (pi: ExtensionAPI) {
       "Read and change the todos of the lazytodo TUI for this directory. The list lives in .lazytodo.json and a running TUI reloads it automatically.",
     promptSnippet: "List, add, update or remove todos in this directory's lazytodo list",
     promptGuidelines: [
-      "Use lazytodo when the user wants work tracked in the lazytodo TUI; do not edit .lazytodo.json by hand.",
+      "Use lazytodo (not todo) when the user wants work tracked in the lazytodo TUI, or a list that should outlive this session.",
+      "Never change .lazytodo.json with bash, echo or write: only lazytodo may, because it takes the file lock and keeps the shape valid.",
     ],
     parameters: Type.Object({
       action: StringEnum(["list", "add", "set", "remove"] as const),

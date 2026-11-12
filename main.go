@@ -36,6 +36,9 @@ func run() error {
 	if err := store.Load(); err != nil {
 		return fmt.Errorf("loading %s: %w", store.Path(), err)
 	}
+	if err := store.EnsureFile(); err != nil {
+		return fmt.Errorf("preparing %s: %w", store.Path(), err)
+	}
 
 	return gui.New(tcelldriver.New(), store, config.Default()).Run()
 }

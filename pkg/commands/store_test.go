@@ -54,6 +54,49 @@ func TestSignatureTracksTheFile(t *testing.T) {
 	}
 }
 
+// TestEnsureFileCreatesAnEmptyList is what makes the file show up on first run.
+func TestEnsureFileCreatesAnEmptyList(t *testing.T) {
+	s := newTestStore(t)
+
+	if _, err := os.Stat(s.Path()); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("the store file should not exist yet: %v", err)
+	}
+
+	if err := s.EnsureFile(); err != nil {
+		t.Fatalf("EnsureFile: %v", err)
+	}
+
+	raw, err := os.ReadFile(s.Path())
+	if err != nil {
+		t.Fatalf("reading the created file: %v", err)
+	}
+	if !strings.Contains(string(raw), `"todos": []`) {
+		t.Errorf("created file = %s, want an empty list", raw)
+	}
+}
+
+// TestEnsureFileNeverClobbersExistingTodos is the safety half: it runs on every
+// start, so it must not touch a list that already has content.
+func TestEnsureFileNeverClobbersExistingTodos(t *testing.T) {
+	s := newTestStore(t)
+	s.Add("keep me", "")
+	if err := s.Save(); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+
+	if err := s.EnsureFile(); err != nil {
+		t.Fatalf("EnsureFile: %v", err)
+	}
+
+	reloaded := NewStore(s.Path())
+	if err := reloaded.Load(); err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if len(reloaded.Todos) != 1 || reloaded.Todos[0].Title != "keep me" {
+		t.Errorf("EnsureFile clobbered the list: %+v", reloaded.Todos)
+	}
+}
+
 func TestLoadMissingFileIsEmpty(t *testing.T) {
 	s := newTestStore(t)
 
@@ -261,6 +304,24 @@ func TestLoadsLegacyDoneFlag(t *testing.T) {
 	}
 	if got := s.Todos[1].Status; got != models.StatusTodo {
 		t.Errorf("done:false loaded as %q, want %q", got, models.StatusTodo)
+	}
+}
+
+// TestSaveWritesAnEmptyListAsArray catches the "todos": null that an empty store
+// used to produce.
+func TestSaveWritesAnEmptyListAsArray(t *testing.T) {
+	s := newTestStore(t)
+
+	if err := s.Save(); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+
+	raw, err := os.ReadFile(s.Path())
+	if err != nil {
+		t.Fatalf("reading back: %v", err)
+	}
+	if !strings.Contains(string(raw), `"todos": []`) {
+		t.Errorf("empty store wrote %s, want \"todos\": []", raw)
 	}
 }
 

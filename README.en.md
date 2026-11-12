@@ -16,7 +16,7 @@ To let an agent edit the list, install the extension as well: press `I` in the T
 
 ## Usage
 
-Todos live in `.lazytodo.json` **in the current directory** — another directory means another list. A missing file is an empty list; the file appears on the first change.
+Todos live in `.lazytodo.json` **in the current directory** — another directory means another list. If the file is missing at startup it is created with an empty list.
 
 ```
 ╭─Todos─All - Doing - Done───╮╭─Detail────────────────────────╮

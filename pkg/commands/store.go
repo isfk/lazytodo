@@ -90,6 +90,21 @@ func (s *Store) Load() error {
 	return nil
 }
 
+// EnsureFile writes an empty list when the file is not there yet, so the file
+// exists as soon as the app starts: the agent extension, an editor and the file
+// watcher all have something to point at instead of "not found".
+func (s *Store) EnsureFile() error {
+	_, err := os.Stat(s.path)
+	switch {
+	case err == nil:
+		return nil
+	case !errors.Is(err, os.ErrNotExist):
+		return fmt.Errorf("stat %s: %w", s.path, err)
+	}
+
+	return s.Save()
+}
+
 // Save writes the list atomically (temp file + rename) so a crash mid-write
 // can't truncate the user's todos.
 func (s *Store) Save() error {
@@ -97,7 +112,14 @@ func (s *Store) Save() error {
 		return fmt.Errorf("create config dir: %w", err)
 	}
 
-	data, err := json.MarshalIndent(storeFile{NextID: s.nextID, Todos: s.Todos}, "", "  ")
+	// Marshal a nil slice as [], not null: the extension in the repo writes [] and
+	// readers that index the array shouldn't have to special-case null.
+	todos := s.Todos
+	if todos == nil {
+		todos = []*models.Todo{}
+	}
+
+	data, err := json.MarshalIndent(storeFile{NextID: s.nextID, Todos: todos}, "", "  ")
 	if err != nil {
 		return fmt.Errorf("encode: %w", err)
 	}
